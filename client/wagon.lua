@@ -59,7 +59,7 @@ local WagonFillPrompt, WagonRefillPrompt
 
 local function SetUpWagonPrompts()
     WagonFillPrompt = UiPromptRegisterBegin()
-    UiPromptSetControlAction(WagonFillPrompt, 0x760A9C6F) -- G key
+    UiPromptSetControlAction(WagonFillPrompt, 0xE30CD707) -- R key
     UiPromptSetText(WagonFillPrompt, CreateVarString(10, 'LITERAL_STRING', 'Fill Bucket'))
     UiPromptSetEnabled(WagonFillPrompt, false)
     UiPromptSetVisible(WagonFillPrompt, false)
@@ -68,7 +68,7 @@ local function SetUpWagonPrompts()
     UiPromptSetGroup(WagonFillPrompt, WagonPromptGroup, 0)
 
     WagonRefillPrompt = UiPromptRegisterBegin()
-    UiPromptSetControlAction(WagonRefillPrompt, 0x760A9C6F) -- G key
+    UiPromptSetControlAction(WagonRefillPrompt, 0xE30CD707) -- R key
     UiPromptSetText(WagonRefillPrompt, CreateVarString(10, 'LITERAL_STRING', 'Refill Tank'))
     UiPromptSetEnabled(WagonRefillPrompt, false)
     UiPromptSetVisible(WagonRefillPrompt, false)

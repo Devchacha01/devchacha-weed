@@ -113,7 +113,7 @@ document.addEventListener('keydown', function (event) {
         }
     }
 
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' || event.which == 8) { // ESC or Backspace
         if (!isHidden('#quantity-modal')) {
             closeQuantityModal();
         } else if (isMenuOpen) {

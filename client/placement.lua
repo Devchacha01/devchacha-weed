@@ -38,7 +38,7 @@ local function SetUpPlacedPrompts()
     UiPromptSetGroup(DryPrompt, PlacedPromptGroup, 0)
 
     TrimPrompt = UiPromptRegisterBegin()
-    UiPromptSetControlAction(TrimPrompt, 0x760A9C6F) -- G key
+    UiPromptSetControlAction(TrimPrompt, 0xD9D0E1C0) -- E key
     UiPromptSetText(TrimPrompt, CreateVarString(10, 'LITERAL_STRING', 'Trim Weed'))
     UiPromptSetEnabled(TrimPrompt, false)
     UiPromptSetVisible(TrimPrompt, false)

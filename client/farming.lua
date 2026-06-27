@@ -515,7 +515,7 @@ local PumpPromptGroup = GetRandomIntInRange(0, 0xffffff)
 
 local function SetUpPumpPrompt()
     FillBucketPrompt = UiPromptRegisterBegin()
-    UiPromptSetControlAction(FillBucketPrompt, 0x760A9C6F) -- G key
+    UiPromptSetControlAction(FillBucketPrompt, 0xE30CD707) -- R key
     local str = CreateVarString(10, 'LITERAL_STRING', 'Fill Bucket')
     UiPromptSetText(FillBucketPrompt, str)
     UiPromptSetEnabled(FillBucketPrompt, false)
@@ -584,9 +584,9 @@ CreateThread(function()
             if IsEntityInWater(ped) and not IsPedInAnyVehicle(ped, true) then
                 sleep = 0
                 local coords = GetEntityCoords(ped)
-                DrawText3D(coords.x, coords.y, coords.z + 1.0, "[ALT] Fill Bucket")
+                DrawText3D(coords.x, coords.y, coords.z + 1.0, "[R] Fill Bucket")
                 
-                if IsControlJustPressed(0, 0x8AAA0AD4) then -- LEFT ALT key
+                if IsControlJustPressed(0, 0xE30CD707) then -- R key
                     VORPCore.Callback.TriggerAsync('devchacha-weed:server:hasEmptyBucket', function(hasBucket)
                         if hasBucket then
                             TaskStartScenarioInPlaceHash(ped, GetHashKey('WORLD_HUMAN_BUCKET_POUR_LOW'), -1, true, 0, 0.0, false)

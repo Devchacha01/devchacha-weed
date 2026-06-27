@@ -114,11 +114,10 @@ local function PlayNPCWalkAway(npc)
 
     TaskWanderStandard(npc, 10.0, 10)
         
-    SetTimeout(60000, function()
+    SetTimeout(10000, function()
         if DoesEntityExist(package) then DeleteEntity(package) end
         if DoesEntityExist(npc) then
             ClearPedTasks(npc)
-            TaskWanderStandard(npc, 10.0, 10)
             SetEntityAsMissionEntity(npc, false, true)
             SetPedAsNoLongerNeeded(npc)
         end
@@ -174,6 +173,24 @@ local function TryToSellToNpc(entity)
         
         local totalPrice = pricePerUnit * demandAmount
         
+        -- Police Alert (while selling)
+        if Config.PoliceAlerts and Config.PoliceAlerts.enabled then
+            local currentTime = GetGameTimer()
+            if (currentTime - lastAlertTime) > (Config.PoliceAlerts.cooldown or 60000) then
+                local chance = math.random(1, 100)
+                if chance <= Config.PoliceAlerts.chance then
+                    local ped = PlayerPedId()
+                    local coords = GetEntityCoords(ped)
+                    local area = nativeGetTownName(coords) or "Unknown Location"
+                    
+                    TriggerServerEvent('devchacha-weed:server:alertLaw', coords, area)
+                    Notify('A witness reported you to the law!', 'error')
+                    
+                    lastAlertTime = currentTime
+                end
+            end
+        end
+        
         PendingDeal = {
             entity = entity,
             item = selectedItem,
@@ -204,6 +221,13 @@ local function TryToSellToNpc(entity)
                 if DoesEntityExist(npc) then
                     ClearPedTasks(npc)
                     TaskWanderStandard(npc, 10.0, 10)
+                    SetTimeout(2000, function()
+                        if DoesEntityExist(npc) then
+                            ClearPedTasks(npc)
+                            SetEntityAsMissionEntity(npc, false, true)
+                            SetPedAsNoLongerNeeded(npc)
+                        end
+                    end)
                 end
                 
                 PendingDeal = nil
@@ -225,27 +249,18 @@ RegisterNUICallback('sell_accept', function(data, cb)
             soldNPCs[deal.entity] = true
             TriggerServerEvent('devchacha-weed:server:sellDynamicItem', deal.item.name, deal.amount, deal.price)
             PlayNPCWalkAway(deal.entity)
-            
-            if Config.PoliceAlerts and Config.PoliceAlerts.enabled then
-                local currentTime = GetGameTimer()
-                if (currentTime - lastAlertTime) > (Config.PoliceAlerts.cooldown or 600000) then
-                    local chance = math.random(1, 100)
-                    if chance <= Config.PoliceAlerts.chance then
-                        local ped = PlayerPedId()
-                        local coords = GetEntityCoords(ped)
-                        local area = nativeGetTownName(coords) or "Unknown Location"
-                        
-                        TriggerServerEvent('devchacha-weed:server:alertLaw', coords, area)
-                        Notify('A witness reported you to the law!', 'error')
-                        
-                        lastAlertTime = currentTime
-                    end
-                end
-            end
         else
             Notify('Transaction cancelled or failed.', 'error')
-            ClearPedTasks(deal.entity)
-            TaskWanderStandard(deal.entity, 10.0, 10)
+            local npc = deal.entity
+            ClearPedTasks(npc)
+            TaskWanderStandard(npc, 10.0, 10)
+            SetTimeout(2000, function()
+                if DoesEntityExist(npc) then
+                    ClearPedTasks(npc)
+                    SetEntityAsMissionEntity(npc, false, true)
+                    SetPedAsNoLongerNeeded(npc)
+                end
+            end)
         end
     end
     
@@ -260,8 +275,16 @@ RegisterNUICallback('sell_decline', function(data, cb)
     if deal and deal.entity then
         soldNPCs[deal.entity] = true
         Notify('You declined the offer.', 'inform')
-        ClearPedTasks(deal.entity)
-        TaskWanderStandard(deal.entity, 10.0, 10)
+        local npc = deal.entity
+        ClearPedTasks(npc)
+        TaskWanderStandard(npc, 10.0, 10)
+        SetTimeout(2000, function()
+            if DoesEntityExist(npc) then
+                ClearPedTasks(npc)
+                SetEntityAsMissionEntity(npc, false, true)
+                SetPedAsNoLongerNeeded(npc)
+            end
+        end)
     end
     
     PendingDeal = nil

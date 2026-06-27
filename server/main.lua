@@ -84,16 +84,25 @@ VORPCore.Callback.Register('devchacha-weed:server:canProcess', function(source, 
             if count and count >= 50 then
                 cb(true)
                 return
-            else
-                local itemLabel = requiredItem
-                local itemDB = exports.vorp_inventory:getItemDB(requiredItem)
-                if itemDB and itemDB.label then itemLabel = itemDB.label end
-                cb(false, "You need 50x " .. itemLabel)
-                return
             end
         end
     end
-    cb(false, "You don't have any materials to process (Need 50x)")
+    
+    -- None of the strains had enough, find best message to show
+    local bestLabel = nil
+    for _, strain in pairs(Config.Strains) do
+        local requiredItem = nil
+        if type == 'wash' then requiredItem = strain.items.leaf
+        elseif type == 'dry' then requiredItem = strain.items.washed
+        elseif type == 'trim' then requiredItem = strain.items.dried
+        end
+        if requiredItem then
+            local itemDB = exports.vorp_inventory:getItemDB(requiredItem)
+            if itemDB and itemDB.label then bestLabel = itemDB.label end
+            break
+        end
+    end
+    cb(false, "You need 50x of any leaf type to process!")
 end)
 
 RegisterNetEvent('devchacha-weed:server:finishProcess', function(type)
@@ -223,22 +232,26 @@ end)
 
 -- Usable Placeables
 exports.vorp_inventory:registerUsableItem('wash_barrel', function(data)
+    exports.vorp_inventory:closeInventory(data.source)
     TriggerClientEvent('devchacha-weed:client:startPlacing', data.source, 'wash_barrel')
 end)
 
 exports.vorp_inventory:registerUsableItem('processing_table', function(data)
+    exports.vorp_inventory:closeInventory(data.source)
     TriggerClientEvent('devchacha-weed:client:startPlacing', data.source, 'processing_table')
 end)
 
 -- Usable seeds
 for strainName, strain in pairs(Config.Strains) do
     exports.vorp_inventory:registerUsableItem(strain.items.seed, function(data)
+        exports.vorp_inventory:closeInventory(data.source)
         TriggerClientEvent('devchacha-weed:client:startPlanting', data.source, strainName)
     end)
 end
 
 -- Usable water bucket
 exports.vorp_inventory:registerUsableItem(Config.WaterItem, function(data)
+    exports.vorp_inventory:closeInventory(data.source)
     TriggerClientEvent('devchacha-weed:client:useWaterBucket', data.source)
 end)
 
@@ -307,6 +320,7 @@ for strainKey, strain in pairs(Config.Strains) do
                 return
             end
         end
+        exports.vorp_inventory:closeInventory(src)
         TriggerClientEvent('devchacha-weed:client:smokeJoint', src, strainKey)
     end)
 end
@@ -337,6 +351,7 @@ exports.vorp_inventory:registerUsableItem('smoking_pipe', function(data)
     for strainKey, strain in pairs(Config.Strains) do
         local countTrimmed = exports.vorp_inventory:getItemCount(src, nil, strain.items.trimmed)
         if countTrimmed and countTrimmed >= 1 then
+            exports.vorp_inventory:closeInventory(src)
             TriggerClientEvent('devchacha-weed:client:loadPipe', src, strainKey)
             return
         end
