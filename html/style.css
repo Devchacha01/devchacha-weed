@@ -1,0 +1,775 @@
+/* Fonts: Using system fonts since CDN won't load in RedM NUI */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'IM Fell English SC', serif;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ================================ */
+/* Shop Menu Styles (Grid Layout) */
+/* ================================ */
+#menu-interface {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 900px;
+    height: auto;
+    max-height: 85vh;
+    z-index: 100;
+}
+
+.parchment-bg {
+    width: 100%;
+    height: 100%;
+    background-image: url('img/paper_bg.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border: 4px solid #3e2f22;
+    border-radius: 4px;
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    color: #3e2f22;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9), inset 0 0 100px rgba(62, 47, 34, 0.1);
+    position: relative;
+}
+
+.parchment-bg::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border: 2px dashed rgba(62, 47, 34, 0.3);
+    pointer-events: none;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.header h1 {
+    font-family: 'Rye', serif;
+    font-size: 36px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #3e2f22;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    border-bottom: 3px double #3e2f22;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+#menu-description {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 900;
+    font-style: italic;
+    color: #4a0404;
+    margin-bottom: 25px;
+    padding: 0 40px;
+    font-family: 'IM Fell English SC', serif;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.options-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    align-content: start;
+}
+
+.menu-option {
+    background: rgba(62, 47, 34, 0.05);
+    border: 1px solid rgba(62, 47, 34, 0.4);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    overflow: hidden;
+}
+
+.menu-option:hover,
+.menu-option.selected {
+    background: rgba(62, 47, 34, 0.15);
+    border-color: #3e2f22;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(62, 47, 34, 0.2);
+}
+
+.menu-option.selected {
+    outline: 2px solid #3e2f22;
+}
+
+.menu-option .image-wrapper {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+    margin-top: 25px;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}
+
+.menu-option img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.menu-option .title {
+    font-family: 'Rye', serif;
+    font-size: 14px;
+    color: #3e2f22;
+    text-align: center;
+    line-height: 1.2;
+    width: 100%;
+    font-weight: bold;
+    margin-bottom: auto;
+}
+
+.menu-option .buy-btn {
+    width: 80%;
+    background: #3e2f22;
+    color: #e3d2b4;
+    text-align: center;
+    padding: 5px 0;
+    margin-top: 5px;
+    border-radius: 2px;
+    font-family: 'Rye', serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    transition: background 0.2s;
+}
+
+.menu-option:hover .buy-btn {
+    background: #5d4037;
+}
+
+.menu-option .price-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #3e2f22;
+    color: #e3d2b4;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 4px 8px;
+    border-bottom-left-radius: 4px;
+}
+
+.footer {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 20px;
+    padding: 15px;
+    border-top: 1px solid rgba(62, 47, 34, 0.3);
+    font-family: 'Rye', serif;
+    color: #2d1f14;
+    font-weight: bold;
+}
+
+.key-hint {
+    margin: 0 15px;
+}
+
+.options-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.options-list::-webkit-scrollbar-track {
+    background: rgba(62, 47, 34, 0.05);
+}
+
+.options-list::-webkit-scrollbar-thumb {
+    background: #5d4037;
+    border-radius: 4px;
+}
+
+/* ================================ */
+/* Selling Interaction UI */
+/* ================================ */
+/* ================================ */
+/* Selling Interaction UI (Dark Shady Deal) */
+/* ================================ */
+#selling-interaction {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 200;
+    width: 600px;
+    font-family: 'IM Fell English SC', serif;
+}
+
+.shady-deal-card {
+    position: relative;
+    background: #000000;
+    /* Pitch Black */
+    border: 2px solid #333333;
+    /* Dark Grey Border */
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow:
+        0 0 0 1px #111,
+        /* Inner border */
+        0 0 20px rgba(0, 0, 0, 1);
+    /* Deep shadow */
+    color: #e6e6e6;
+    text-align: center;
+    overflow: hidden;
+    animation: dealPopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.shady-deal-card::before {
+    /* Removed texture to keep it clean black */
+    display: none;
+}
+
+/* Header Section */
+.deal-header {
+    border-bottom: 2px solid #333;
+    /* Dark Grey */
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+.deal-header h1 {
+    font-family: 'Rye', serif;
+    font-size: 32px;
+    color: #ffffff;
+    /* Pure White */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.deal-subtitle {
+    font-size: 16px;
+    font-style: italic;
+    color: #666;
+    /* Medium Grey */
+    margin-top: 5px;
+}
+
+/* Offer Display */
+.deal-offer-container {
+    background: #0a0a0a;
+    /* Almost Black */
+    border: 1px solid #222;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.deal-offer-text {
+    font-size: 24px;
+    line-height: 1.4;
+    color: #d7ccc8;
+}
+
+.highlight-item {
+    color: #c4a35a;
+    font-weight: bold;
+    text-decoration: underline decoration-dotted rgba(196, 163, 90, 0.5);
+}
+
+.highlight-price {
+    font-family: 'Rye', serif;
+    color: #4caf50;
+    /* Money Green */
+    font-size: 32px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    background: rgba(76, 175, 80, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    transform: rotate(-2deg);
+    /* Organic stamp look */
+}
+
+/* Actions */
+.deal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.deal-btn {
+    flex: 1;
+    padding: 12px 20px;
+    font-family: 'Rye', serif;
+    font-size: 16px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+    /* Western angled corners */
+}
+
+.deal-btn.accept {
+    background: linear-gradient(to bottom, #2e7d32, #1b5e20);
+    color: #e8f5e9;
+    border-bottom: 4px solid #0d3b10;
+}
+
+.deal-btn.accept:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.deal-btn.decline {
+    background: linear-gradient(to bottom, #c62828, #b71c1c);
+    color: #ffebee;
+    border-bottom: 4px solid #7f0000;
+}
+
+.deal-btn.decline:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.deal-btn:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+}
+
+@keyframes dealPopIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ================================ */
+/* Quantity Modal */
+/* ================================ */
+#quantity-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 200;
+}
+
+.quantity-box {
+    background-image: url('img/paper_bg.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border: 4px solid #3e2f22;
+    border-radius: 4px;
+    padding: 40px;
+    text-align: center;
+    color: #3e2f22;
+    box-shadow: 0 15px 60px rgba(0, 0, 0, 0.9), inset 0 0 100px rgba(62, 47, 34, 0.1);
+    min-width: 350px;
+    position: relative;
+}
+
+.quantity-box::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border: 2px dashed rgba(62, 47, 34, 0.3);
+    pointer-events: none;
+}
+
+.quantity-box h2 {
+    font-family: 'Rye', serif;
+    margin: 0 0 25px 0;
+    font-size: 28px;
+    color: #3e2f22;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    border-bottom: 3px double #3e2f22;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.quantity-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.qty-btn {
+    width: 45px;
+    height: 45px;
+    background: #5d4037;
+    border: 2px solid #3e2f22;
+    color: #e3d2b4;
+    font-weight: bold;
+    font-size: 22px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'Rye', serif;
+    transition: all 0.2s;
+}
+
+.qty-btn:hover {
+    background: #3e2f22;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#qty-input {
+    width: 80px;
+    height: 45px;
+    text-align: center;
+    background: rgba(62, 47, 34, 0.1);
+    border: 2px solid #3e2f22;
+    color: #3e2f22;
+    font-size: 24px;
+    border-radius: 4px;
+    font-family: 'Rye', serif;
+}
+
+.quantity-price {
+    font-size: 20px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    color: #3e2f22;
+    font-family: 'Rye', serif;
+}
+
+.quantity-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+/* ============================================
+   PLANT STATUS MENU - WILD WEST THEME
+   ============================================ */
+
+#plant-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: fadeSlideIn 0.4s ease-out;
+    z-index: 150;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -45%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Override: Use custom cannabis-themed background for plant menu */
+#plant-menu .parchment-bg {
+    background-image: url('img/plant_menu_bg.jpg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    padding: 60px 50px;
+    /* More padding to account for decorative border */
+}
+
+/* Override title for plant menu */
+#plant-menu .header h1 {
+    font-size: 32px;
+    color: #2d4a1c;
+    /* Dark forest green */
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.5);
+    letter-spacing: 3px;
+    border-bottom-color: #3d5a2c;
+}
+
+/* ================================ */
+/* Plant Menu Styles (Cannabis Theme) */
+/* ================================ */
+
+.plant-header-details {
+    color: #3a5025;
+    font-family: 'Rye', serif;
+}
+
+#plant-menu #plant-label {
+    font-size: 22px !important;
+    color: #3a5025;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6), -1px -1px 0 rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+}
+
+.progress-section {
+    margin-bottom: 20px;
+    padding: 0 15px;
+}
+
+.progress-item {
+    margin-bottom: 18px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #4a6633;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+    font-family: 'IM Fell English SC', serif;
+}
+
+/* Premium Etched Progress Bars */
+.progress-bar {
+    width: 100%;
+    height: 18px;
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.15) 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            rgba(0, 0, 0, 0.1) 100%);
+    border: 2px solid #5a7044;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+        inset 0 2px 4px rgba(0, 0, 0, 0.3),
+        0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.5s ease-out;
+    border-radius: 8px;
+    position: relative;
+}
+
+/* Water Bar - Deep Ocean Blue with Glass Effect */
+.progress-fill.water {
+    background: linear-gradient(to bottom,
+            #5eb3e4 0%,
+            #0288d1 30%,
+            #0277bd 70%,
+            #01579b 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Growth Bar - Rich Forest Green with Depth */
+.progress-fill.growth {
+    background: linear-gradient(to bottom,
+            #6abf69 0%,
+            #43a047 30%,
+            #388e3c 70%,
+            #2e7d32 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Quality/Health Bar - Crimson with Depth */
+.progress-fill.health {
+    background: linear-gradient(to bottom,
+            #ef5350 0%,
+            #e53935 30%,
+            #d32f2f 70%,
+            #c62828 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.info-section {
+    border: 1px solid rgba(58, 80, 37, 0.4);
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 20px;
+    margin: 10px 20px 15px 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #3a5025;
+    font-family: 'IM Fell English SC', serif;
+}
+
+.info-icon {
+    font-size: 16px;
+}
+
+.info-label {
+    color: #4a6633;
+    font-weight: bold;
+}
+
+.info-value {
+    color: #2d4a1c;
+    font-weight: bold;
+}
+
+/* Actions Grid - Premium Etched Buttons */
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 0 15px;
+    margin-bottom: 10px;
+}
+
+.action-btn {
+    padding: 12px 14px;
+    border: 2px solid #3a5025;
+    border-radius: 8px;
+    font-family: 'Rye', serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: linear-gradient(to bottom,
+            #5c7a3d 0%,
+            #4a6633 40%,
+            #3d5528 100%);
+    color: #e8f5e0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow:
+        0 3px 6px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.action-btn:hover:not(.disabled) {
+    transform: translateY(-2px);
+    box-shadow:
+        0 5px 10px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    background: linear-gradient(to bottom,
+            #6a8a4d 0%,
+            #5a7a3d 40%,
+            #4a6633 100%);
+}
+
+.action-btn:active:not(.disabled) {
+    transform: translateY(1px);
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.3),
+        inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.action-btn.disabled {
+    background: linear-gradient(to bottom, #7a8a74, #6a7a64);
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: #5a6b55;
+    color: #b0b8a8;
+}
+
+/* Harvest Button - Golden Glow */
+.actions-grid .action-btn.harvest:not(.disabled) {
+    background: linear-gradient(to bottom,
+            #7cb342 0%,
+            #558b2f 40%,
+            #33691e 100%);
+    border-color: #33691e;
+}
+
+.actions-grid .action-btn.harvest:hover:not(.disabled) {
+    background: linear-gradient(to bottom,
+            #8bc34a 0%,
+            #689f38 40%,
+            #558b2f 100%);
+    border-color: #558b2f;
+}
+
+/* Destroy Button - Deep Crimson */
+.actions-grid .action-btn.destroy {
+    background: linear-gradient(to bottom,
+            #c62828 0%,
+            #b71c1c 40%,
+            #8b0000 100%);
+    border-color: #8b0000;
+    box-shadow:
+        0 3px 6px rgba(139, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.actions-grid .action-btn.destroy:hover {
+    background: linear-gradient(to bottom,
+            #e53935 0%,
+            #d32f2f 40%,
+            #c62828 100%);
+    border-color: #b71c1c;
+}
+
+/* Toast */
+#toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(45, 32, 20, 0.95);
+    color: #C4A35A;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 14px;
+    z-index: 1000;
+    border: 2px solid #8B4513;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+    font-family: 'IM Fell English SC', serif;
+}

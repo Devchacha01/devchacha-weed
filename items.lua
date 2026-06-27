@@ -1,0 +1,55 @@
+-- VORP Weed Farming Items Reference
+-- In VORP Framework, items are registered directly in the MySQL database under the `items` table.
+-- Please run the `install.sql` file in your database to insert all the required items automatically.
+--
+-- Below is a list of the registered items for your reference:
+--
+-- TOOLS:
+-- * shovel - Shovel
+-- * fertilizer - Fertilizer
+--
+-- PROPS (Placeable items):
+-- * wash_barrel - Wash Bucket
+-- * processing_table - Drying Rack
+--
+-- SEEDS:
+-- * seed_kalka - Guarma Gold Seed
+-- * seed_purp - Ambarino Frost Seed
+-- * seed_tex - New Austin Haze Seed
+--
+-- RAW LEAVES:
+-- * leaf_kalka - Guarma Gold Leaf
+-- * leaf_purp - Ambarino Frost Leaf
+-- * leaf_tex - New Austin Haze Leaf
+--
+-- WASHED LEAVES:
+-- * washed_kalka - Washed Guarma Gold
+-- * washed_purp - Washed Ambarino Frost
+-- * washed_tex - Washed New Austin Haze
+--
+-- DRIED BUDS:
+-- * dried_kalka - Dried Guarma Gold
+-- * dried_purp - Dried Ambarino Frost
+-- * dried_tex - Dried New Austin Haze
+--
+-- TRIMMED BUDS:
+-- * trimmed_kalka - Guarma Gold Bud
+-- * trimmed_purp - Ambarino Frost Bud
+-- * trimmed_tex - New Austin Haze Bud
+--
+-- JOINTS:
+-- * joint_kalka - Guarma Gold Joint
+-- * joint_purp - Ambarino Frost Joint
+-- * joint_tex - New Austin Haze Joint
+--
+-- MISC:
+-- * rolling_paper - Rolling Paper
+-- * emptybucket - Empty Bucket
+-- * fullbucket - Water Bucket (Config.WaterItem)
+-- * smoking_pipe - Smoking Pipe
+-- * matches - Match Box
+--
+-- LOADED PIPES:
+-- * loaded_pipe_kalka - Pipe (Guarma Gold)
+-- * loaded_pipe_purp - Pipe (Ambarino Frost)
+-- * loaded_pipe_tex - Pipe (New Austin Haze)
