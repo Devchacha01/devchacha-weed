@@ -284,6 +284,7 @@ for strainKey, strain in pairs(Config.Strains) do
             VORPCore.NotifyRightTip(src, 'You need Rolling Paper!', 4000)
             return
         end
+        exports.vorp_inventory:closeInventory(src)
         TriggerClientEvent('devchacha-weed:client:rollJoint', src, strainKey)
     end)
 end
@@ -391,6 +392,7 @@ for strainKey, strain in pairs(Config.Strains) do
         local metadata = data.item.metadata or {}
         local puffs = metadata.puffs or Config.Smoking.pipePuffs
         
+        exports.vorp_inventory:closeInventory(src)
         TriggerClientEvent('devchacha-weed:client:smokePipe', src, strainKey, puffs)
     end)
 end

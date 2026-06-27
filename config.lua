@@ -137,9 +137,9 @@ Config.Smoking = {
     highIntensity = 0.3, -- 0.0 to 1.0
     
     -- Key bindings (RedM control hashes)
-    dropKey = 0x760A9C6F, -- G key - Drop/Stop smoking
+    dropKey = 0xE30CD707, -- R key - Drop/Stop smoking
     smokeKey = 0x760A9C6F, -- G key - Take a puff
-    changeKey = 0x760A9C6F, -- G key - Change stance
+    changeKey = 0xD9D0E1C0, -- E key - Change stance
     
     -- Requirements
     requireMatches = true -- Require matches to light joints/pipes

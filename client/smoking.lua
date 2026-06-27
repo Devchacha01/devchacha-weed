@@ -214,26 +214,42 @@ RegisterNetEvent('devchacha-weed:client:smokeJoint', function(strainKey)
             break
         end
         
-        -- CHANGE STANCE (male only has multiple stances)
-        if male and IsControlJustReleased(0, Config.Smoking.changeKey or 0xD51B784F) then
-            if stance == "c" then
-                Anim(ped, "amb_rest@world_human_smoking@nervous_stressed@male_b@base", "base", -1, 30)
-                Wait(1000)
-                stance = "b"
-            elseif stance == "b" then
-                Anim(ped, "amb_rest@world_human_smoking@male_d@base", "base", -1, 30)
-                Wait(1000)
-                stance = "d"
-            elseif stance == "d" then
-                Anim(ped, "amb_rest@world_human_smoking@male_d@trans", "d_trans_a", -1, 30)
-                Wait(4000)
-                Anim(ped, "amb_wander@code_human_smoking_wander@male_a@base", "base", -1, 30, 0)
-                stance = "a"
+        -- CHANGE STANCE
+        if IsControlJustReleased(0, Config.Smoking.changeKey or 0xD51B784F) then
+            if male then
+                if stance == "c" then
+                    Anim(ped, "amb_rest@world_human_smoking@nervous_stressed@male_b@base", "base", -1, 30)
+                    Wait(1000)
+                    stance = "b"
+                elseif stance == "b" then
+                    Anim(ped, "amb_rest@world_human_smoking@male_d@base", "base", -1, 30)
+                    Wait(1000)
+                    stance = "d"
+                elseif stance == "d" then
+                    Anim(ped, "amb_rest@world_human_smoking@male_d@trans", "d_trans_a", -1, 30)
+                    Wait(4000)
+                    Anim(ped, "amb_wander@code_human_smoking_wander@male_a@base", "base", -1, 30, 0)
+                    stance = "a"
+                else
+                    Anim(ped, "amb_rest@world_human_smoking@male_a@trans", "a_trans_c", -1, 30)
+                    Wait(4233)
+                    Anim(ped, "amb_rest@world_human_smoking@male_c@base", "base", -1, 30, 0)
+                    stance = "c"
+                end
             else
-                Anim(ped, "amb_rest@world_human_smoking@male_a@trans", "a_trans_c", -1, 30)
-                Wait(4233)
-                Anim(ped, "amb_rest@world_human_smoking@male_c@base", "base", -1, 30, 0)
-                stance = "c"
+                if stance == "c" then
+                    Anim(ped, "amb_rest@world_human_smoking@female_b@base", "base", -1, 30)
+                    Wait(1000)
+                    stance = "b"
+                elseif stance == "b" then
+                    Anim(ped, "amb_rest@world_human_smoking@female_a@base", "base", -1, 30)
+                    Wait(1000)
+                    stance = "a"
+                else
+                    Anim(ped, "amb_rest@world_human_smoking@female_c@base", "base", -1, 30)
+                    Wait(1000)
+                    stance = "c"
+                end
             end
         end
         
