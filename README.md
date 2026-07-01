@@ -127,16 +127,19 @@ Turn your raw leaves into sellable product. You need **50x Items** for each step
    - *50x Dried -> 46-49x Trimmed Bud*.
 
 ### 💰 Making Money: Street Dealing
-Sell your product directly to locals in **Valentine, Rhodes, Saint Denis, or Blackwater**.
-1. **Toggle Seller Mode**: Type `/sellweed` in your chat box.
-2. **Wait for Buyers**: Civilian NPCs will approach you one-by-one.
-3. **Negotiate**:
-   - They will make an offer.
+Sell your product directly to any locals on the street in **Valentine, Rhodes, Saint Denis, or Blackwater**.
+1. **Find a Buyer**: Walk up to **any civilian NPC** walking on the street in a selling town.
+2. **Offer Contraband**: If you have joints or processed buds in your inventory, hold the **G key** (`[G] Offer Contraband`) to pitch a deal.
+3. **Negotiate Offer**:
+   - A negotiation menu will pop up on your screen.
    - **Lowballers**: ~30% of market value (40% chance).
    - **Normal**: Market value (50% chance).
    - **Highballers**: ~150% of market value (10% chance).
-4. **Risk**: There is a **50% chance** a witness will call the law!
-5. **Auto-Stop**: If you run out of weed or step outside town boundaries, selling stops automatically.
+4. **Deal Decision**:
+   - **Accept**: Hand over the goods through an **8-second progress bar** and custom package handover animation. You receive cash, and the NPC walks away holding the package in their hand.
+   - **Decline**: You walk away from the offer, and the NPC wanders off.
+5. **Risk**: There is a **70% chance** (configurable) that a witness will report your deal to the law, placing a blip on the map for police players!
+6. **Limit**: You cannot sell to the same NPC twice in the same session.
 
 ### 🚬 Smoking Features
 Enjoy your own supply with immersive effects. **Requires Matches**.

@@ -148,7 +148,7 @@ Config.Smoking = {
 -- Law Enforcement Alerts
 Config.PoliceAlerts = {
     enabled = true,
-    chance = 50, -- % chance to alert police (1-100)
+    chance = 70, -- % chance to alert police (1-100)
     cooldown = 600000, -- 10 Minutes cooldown between alerts (to prevent spam)
     jobs = { 'police', 'sheriff', 'marshal' }, -- Jobs to notify
     blip = {

@@ -4,6 +4,7 @@ local progressbar = exports.vorp_progressbar:initiate()
 -- Progress bar helper
 local function startProgressBar(label, duration, cb)
     local ped = PlayerPedId()
+    Wait(300)
     FreezeEntityPosition(ped, true)
     progressbar.start(label, duration, function()
         FreezeEntityPosition(ped, false)

@@ -4,6 +4,63 @@ local PlantsData = {} -- All known plants data
 local spawnedPlants = {} -- Physically spawned objects
 local inPlanting = false
 
+local activeProp = nil
+
+local function PlayFarmingAnimation(animType)
+    local ped = PlayerPedId()
+    ClearPedTasksImmediately(ped)
+    Wait(100)
+    
+    if animType == 'plant' then
+        local dict = "amb_work@world_human_gravedig@working@male_b@base"
+        RequestAnimDict(dict)
+        while not HasAnimDictLoaded(dict) do
+            Wait(10)
+        end
+        
+        local model = GetHashKey('p_shovel02x')
+        RequestModel(model)
+        while not HasModelLoaded(model) do
+            Wait(10)
+        end
+        
+        local boneIndex = GetEntityBoneIndexByName(ped, 'SKEL_R_Hand')
+        activeProp = CreateObject(model, 0.0, 0.0, 0.0, true, true, false)
+        AttachEntityToEntity(activeProp, ped, boneIndex, 0.0, -0.09, -0.09, 250.2899, 579.19, 373.3, true, true, false, true, 1, true)
+        
+        TaskPlayAnim(ped, dict, "base", 8.0, -8.0, -1, 1, 0.0, false, false, false)
+        RemoveAnimDict(dict)
+        
+    elseif animType == 'harvest' or animType == 'weed' then
+        local dict = "mech_pickup@plant@gold_currant"
+        RequestAnimDict(dict)
+        while not HasAnimDictLoaded(dict) do
+            Wait(10)
+        end
+        
+        TaskPlayAnim(ped, dict, "enter_rf", 8.0, -8.0, -1, 1, 0.0, false, false, false)
+        RemoveAnimDict(dict)
+        
+    elseif animType == 'water' then
+        TaskStartScenarioInPlaceHash(ped, GetHashKey('WORLD_HUMAN_BUCKET_POUR_LOW'), -1, true, 0, 0.0, false)
+        
+    elseif animType == 'fertilize' then
+        TaskStartScenarioInPlaceHash(ped, GetHashKey('WORLD_HUMAN_FEED_CHICKEN'), -1, true, 0, 0.0, false)
+        
+    elseif animType == 'destroy' then
+        TaskStartScenarioInPlaceHash(ped, GetHashKey('WORLD_HUMAN_CROUCH_INSPECT'), -1, true, 0, 0.0, false)
+    end
+end
+
+local function StopFarmingAnimation()
+    local ped = PlayerPedId()
+    ClearPedTasksImmediately(ped)
+    if activeProp and DoesEntityExist(activeProp) then
+        DeleteObject(activeProp)
+        activeProp = nil
+    end
+end
+
 -- Notification helper
 local function Notify(text, type)
     TriggerEvent('vorp:TipRight', text, 4000)
@@ -12,8 +69,10 @@ end
 -- Progress bar helper
 local function startProgressBar(label, duration, cb)
     local ped = PlayerPedId()
+    Wait(300)
     FreezeEntityPosition(ped, true)
     progressbar.start(label, duration, function()
+        StopFarmingAnimation()
         FreezeEntityPosition(ped, false)
         if cb then cb() end
     end)
@@ -143,7 +202,7 @@ CreateThread(function()
 end)
 
 -- Prompts setup
-local InspectPrompt
+local InspectPrompt, HarvestPrompt, WaterPlantPrompt, FertilizePlantPrompt, DestroyPlantPrompt
 local PromptGroup = GetRandomIntInRange(0, 0xffffff)
 
 local function SetUpInspectPrompt()
@@ -156,6 +215,43 @@ local function SetUpInspectPrompt()
     UiPromptSetHoldMode(InspectPrompt, true)
     UiPromptRegisterEnd(InspectPrompt)
     UiPromptSetGroup(InspectPrompt, PromptGroup, 0)
+
+    HarvestPrompt = UiPromptRegisterBegin()
+    UiPromptSetControlAction(HarvestPrompt, 0xD51A84F2) -- F key
+    local strH = CreateVarString(10, 'LITERAL_STRING', 'Harvest Crop')
+    UiPromptSetText(HarvestPrompt, strH)
+    UiPromptSetEnabled(HarvestPrompt, false)
+    UiPromptSetVisible(HarvestPrompt, false)
+    UiPromptSetHoldMode(HarvestPrompt, true)
+    UiPromptRegisterEnd(HarvestPrompt)
+    UiPromptSetGroup(HarvestPrompt, PromptGroup, 0)
+
+    WaterPlantPrompt = UiPromptRegisterBegin()
+    UiPromptSetControlAction(WaterPlantPrompt, 0xE30CD707) -- R key
+    UiPromptSetText(WaterPlantPrompt, CreateVarString(10, 'LITERAL_STRING', 'Water Crop'))
+    UiPromptSetEnabled(WaterPlantPrompt, false)
+    UiPromptSetVisible(WaterPlantPrompt, false)
+    UiPromptSetHoldMode(WaterPlantPrompt, true)
+    UiPromptRegisterEnd(WaterPlantPrompt)
+    UiPromptSetGroup(WaterPlantPrompt, PromptGroup, 0)
+
+    FertilizePlantPrompt = UiPromptRegisterBegin()
+    UiPromptSetControlAction(FertilizePlantPrompt, 0xD9D0E1C0) -- E key
+    UiPromptSetText(FertilizePlantPrompt, CreateVarString(10, 'LITERAL_STRING', 'Fertilize Crop'))
+    UiPromptSetEnabled(FertilizePlantPrompt, false)
+    UiPromptSetVisible(FertilizePlantPrompt, false)
+    UiPromptSetHoldMode(FertilizePlantPrompt, true)
+    UiPromptRegisterEnd(FertilizePlantPrompt)
+    UiPromptSetGroup(FertilizePlantPrompt, PromptGroup, 0)
+
+    DestroyPlantPrompt = UiPromptRegisterBegin()
+    UiPromptSetControlAction(DestroyPlantPrompt, 0xB2F377E8) -- L key
+    UiPromptSetText(DestroyPlantPrompt, CreateVarString(10, 'LITERAL_STRING', 'Destroy Crop'))
+    UiPromptSetEnabled(DestroyPlantPrompt, false)
+    UiPromptSetVisible(DestroyPlantPrompt, false)
+    UiPromptSetHoldMode(DestroyPlantPrompt, true)
+    UiPromptRegisterEnd(DestroyPlantPrompt)
+    UiPromptSetGroup(DestroyPlantPrompt, PromptGroup, 0)
 end
 
 -- Prompts loop for plant interaction
@@ -196,10 +292,49 @@ CreateThread(function()
                     label = "Young " .. label 
                 end
                 
+                -- Parse properties safely to prevent comparison errors / thread crashes
+                local growthVal = tonumber(nearPlant.growth) or 0.0
+                local waterVal = tonumber(nearPlant.water) or 0.0
+                local qualityVal = tonumber(nearPlant.quality) or 100.0
+                local fertilizedVal = tonumber(nearPlant.fertilized) or 0
+                
+                -- Display plant status HUD using 3D Text
+                local hudText = string.format("~COLOR_WHITE~%s\n~COLOR_GREEN~Growth: %d%%\n~COLOR_BLUE~Water: %d%%\n~COLOR_RED~Health: %d%%\n~COLOR_YELLOW~Fertilized: %s",
+                    label,
+                    math.floor(growthVal),
+                    math.floor(waterVal),
+                    math.floor(qualityVal),
+                    (fertilizedVal >= 1) and "Yes" or "No"
+                )
+                local px = nearPlant.coords.x or nearPlant.coords[1]
+                local py = nearPlant.coords.y or nearPlant.coords[2]
+                local pz = nearPlant.coords.z or nearPlant.coords[3]
+                DrawText3D(px, py, pz + 0.8, hudText)
+                
+                -- Inspect Prompt
                 local str = CreateVarString(10, 'LITERAL_STRING', "Inspect " .. label)
                 UiPromptSetText(InspectPrompt, str)
                 UiPromptSetEnabled(InspectPrompt, true)
                 UiPromptSetVisible(InspectPrompt, true)
+                
+                -- Harvest Prompt (available if growth >= 99)
+                local canHarvest = growthVal >= 99
+                UiPromptSetEnabled(HarvestPrompt, canHarvest)
+                UiPromptSetVisible(HarvestPrompt, canHarvest)
+
+                -- Water Prompt (available if water < 100)
+                local needsWater = waterVal < 100
+                UiPromptSetEnabled(WaterPlantPrompt, needsWater)
+                UiPromptSetVisible(WaterPlantPrompt, needsWater)
+
+                -- Fertilize Prompt (available if not fertilized and growth < 99)
+                local canFertilize = (fertilizedVal < 1) and (growthVal < 99)
+                UiPromptSetEnabled(FertilizePlantPrompt, canFertilize)
+                UiPromptSetVisible(FertilizePlantPrompt, canFertilize)
+
+                -- Destroy Prompt (always available)
+                UiPromptSetEnabled(DestroyPlantPrompt, true)
+                UiPromptSetVisible(DestroyPlantPrompt, true)
                 
                 local groupLabel = CreateVarString(10, 'LITERAL_STRING', label)
                 UiPromptSetActiveGroupThisFrame(PromptGroup, groupLabel, 0, 0, 0, 0)
@@ -220,10 +355,84 @@ CreateThread(function()
                         print("[devchacha-weed] SendNUIMessage openPlant dispatched!")
                         Wait(500) -- Prevent double click/spam
                     end
+                elseif canHarvest and UiPromptHasHoldModeCompleted(HarvestPrompt) then
+                    local ped = PlayerPedId()
+                    PlayFarmingAnimation('harvest')
+                    
+                    startProgressBar('Harvesting...', 8000, function()
+                        TriggerServerEvent('devchacha-weed:server:deletePlant', nearPlant.id, 'harvest')
+                    end)
+                    Wait(1000)
+                elseif needsWater and UiPromptHasHoldModeCompleted(WaterPlantPrompt) then
+                    VORPCore.Callback.TriggerAsync('devchacha-weed:server:hasWaterBucket', function(hasItem)
+                        if not hasItem then
+                            Notify('You need a full water bucket!', 'error')
+                            return
+                        end
+                        local ped = PlayerPedId()
+                        PlayFarmingAnimation('water')
+                        
+                        startProgressBar('Watering...', 4000, function()
+                            VORPCore.Callback.TriggerAsync('devchacha-weed:server:waterPlant', function(result)
+                                if result.success then
+                                    if PlantsData[nearPlant.id] then
+                                        PlantsData[nearPlant.id].water = math.min(100, PlantsData[nearPlant.id].water + 50)
+                                    end
+                                    if result.usesLeft then
+                                        Notify('Watered! Uses remaining: ' .. result.usesLeft, 'success')
+                                    end
+                                else
+                                    Notify(result.msg or 'Failed', 'error')
+                                end
+                            end, nearPlant.id)
+                        end)
+                    end)
+                    Wait(1000)
+                elseif canFertilize and UiPromptHasHoldModeCompleted(FertilizePlantPrompt) then
+                    VORPCore.Callback.TriggerAsync('devchacha-weed:server:hasFertilizer', function(hasItem)
+                        if not hasItem then
+                            Notify('You need fertilizer!', 'error')
+                            return
+                        end
+                        local ped = PlayerPedId()
+                        PlayFarmingAnimation('fertilize')
+                        
+                        startProgressBar('Fertilizing...', 4000, function()
+                            VORPCore.Callback.TriggerAsync('devchacha-weed:server:fertilizePlant', function(result)
+                                if result.success then
+                                    Notify('Fertilized! (+10% Growth)', 'success')
+                                else
+                                    Notify(result.msg or 'Need Fertilizer!', 'error')
+                                end
+                            end, nearPlant.id)
+                        end)
+                    end)
+                    Wait(1000)
+                elseif UiPromptHasHoldModeCompleted(DestroyPlantPrompt) then
+                    local ped = PlayerPedId()
+                    local plantCoords = vector3(nearPlant.coords.x, nearPlant.coords.y, nearPlant.coords.z)
+                    PlayFarmingAnimation('destroy')
+                    
+                    startProgressBar('Setting Fire...', 3000, function()
+                        local fire = StartScriptFire(plantCoords.x, plantCoords.y, plantCoords.z, 10, false, false, false, 16)
+                        Wait(3000)
+                        RemoveScriptFire(fire)
+                        TriggerServerEvent('devchacha-weed:server:deletePlant', nearPlant.id, 'destroy')
+                        Notify('Plant burned to ashes!', 'success')
+                    end)
+                    Wait(1000)
                 end
             else
                 UiPromptSetEnabled(InspectPrompt, false)
                 UiPromptSetVisible(InspectPrompt, false)
+                UiPromptSetEnabled(HarvestPrompt, false)
+                UiPromptSetVisible(HarvestPrompt, false)
+                UiPromptSetEnabled(WaterPlantPrompt, false)
+                UiPromptSetVisible(WaterPlantPrompt, false)
+                UiPromptSetEnabled(FertilizePlantPrompt, false)
+                UiPromptSetVisible(FertilizePlantPrompt, false)
+                UiPromptSetEnabled(DestroyPlantPrompt, false)
+                UiPromptSetVisible(DestroyPlantPrompt, false)
             end
         end
         Wait(sleep)
@@ -259,10 +468,9 @@ RegisterNUICallback('plantAction', function(data, cb)
             SendNUIMessage({ action = 'close' })
 
             local ped = PlayerPedId()
-            TaskStartScenarioInPlaceHash(ped, GetHashKey('WORLD_HUMAN_BUCKET_POUR_LOW'), -1, true, 0, 0.0, false)
+            PlayFarmingAnimation('water')
 
             startProgressBar('Watering...', 4000, function()
-                ClearPedTasksImmediately(ped)
                 
                 VORPCore.Callback.TriggerAsync('devchacha-weed:server:waterPlant', function(result)
                     if result.success then
@@ -306,10 +514,9 @@ RegisterNUICallback('plantAction', function(data, cb)
             SendNUIMessage({ action = 'close' })
 
             local ped = PlayerPedId()
-            TaskStartScenarioInPlaceHash(ped, GetHashKey('WORLD_HUMAN_FEED_CHICKEN'), -1, true, 0, 0.0, false)
+            PlayFarmingAnimation('fertilize')
 
             startProgressBar('Fertilizing...', 4000, function()
-                ClearPedTasksImmediately(ped)
                 
                 VORPCore.Callback.TriggerAsync('devchacha-weed:server:fertilizePlant', function(result)
                     if result.success then
@@ -336,10 +543,9 @@ RegisterNUICallback('plantAction', function(data, cb)
         end
         
         local plantCoords = vector3(plant.coords.x, plant.coords.y, plant.coords.z)
-        TaskStartScenarioInPlaceHash(ped, GetHashKey('WORLD_HUMAN_CROUCH_INSPECT'), -1, true, 0, 0.0, false)
+        PlayFarmingAnimation('destroy')
         
         startProgressBar('Setting Fire...', 3000, function()
-            ClearPedTasksImmediately(ped)
             local fire = StartScriptFire(plantCoords.x, plantCoords.y, plantCoords.z, 10, false, false, false, 16)
             Wait(3000)
             RemoveScriptFire(fire)
@@ -356,10 +562,9 @@ RegisterNUICallback('plantAction', function(data, cb)
         local plant = PlantsData[plantId]
         if plant and plant.growth >= 99 then
             local ped = PlayerPedId()
-            TaskStartScenarioInPlaceHash(ped, GetHashKey('WORLD_HUMAN_FARMER_WEEDING'), -1, true, 0, 0.0, false)
+            PlayFarmingAnimation('harvest')
             
-            startProgressBar('Harvesting...', 4000, function()
-                ClearPedTasksImmediately(ped)
+            startProgressBar('Harvesting...', 8000, function()
                 TriggerServerEvent('devchacha-weed:server:deletePlant', plantId, 'harvest')
                 cb({ success = true, message = 'Harvested!' })
             end)
@@ -473,10 +678,9 @@ RegisterNetEvent('devchacha-weed:client:startPlanting', function(strain)
                     inPlanting = false
                     
                     local ped = PlayerPedId()
-                    TaskStartScenarioInPlaceHash(ped, GetHashKey('WORLD_HUMAN_FARMER_WEEDING'), -1, true, 0, 0.0, false)
+                    PlayFarmingAnimation('plant')
                     
                     startProgressBar('Planting Seed...', 4000, function()
-                        ClearPedTasksImmediately(ped)
                         local coordsToSend = { x = finalCoords.x, y = finalCoords.y, z = finalCoords.z, w = heading }
                         TriggerServerEvent('devchacha-weed:server:savePlant', coordsToSend, strain)
                         Notify('Seed planted!', 'success')
@@ -544,13 +748,15 @@ CreateThread(function()
                     end
                 end
             end
+            local nearWater = IsEntityInWater(ped) and not IsPedInAnyVehicle(ped, true)
             
-            if nearPump then
+            if nearPump or nearWater then
                 sleep = 0
                 UiPromptSetEnabled(FillBucketPrompt, true)
                 UiPromptSetVisible(FillBucketPrompt, true)
                 
-                local groupLabel = CreateVarString(10, 'LITERAL_STRING', "Water Pump")
+                local groupName = nearPump and "Water Pump" or "Water Source"
+                local groupLabel = CreateVarString(10, 'LITERAL_STRING', groupName)
                 UiPromptSetActiveGroupThisFrame(PumpPromptGroup, groupLabel, 0, 0, 0, 0)
                 
                 if UiPromptHasHoldModeCompleted(FillBucketPrompt) then
@@ -575,32 +781,4 @@ CreateThread(function()
     end
 end)
 
--- Natural Water Interaction
-CreateThread(function()
-    while true do
-        local sleep = 1000
-        if true then
-            local ped = PlayerPedId()
-            if IsEntityInWater(ped) and not IsPedInAnyVehicle(ped, true) then
-                sleep = 0
-                local coords = GetEntityCoords(ped)
-                DrawText3D(coords.x, coords.y, coords.z + 1.0, "[R] Fill Bucket")
-                
-                if IsControlJustPressed(0, 0xE30CD707) then -- R key
-                    VORPCore.Callback.TriggerAsync('devchacha-weed:server:hasEmptyBucket', function(hasBucket)
-                        if hasBucket then
-                            TaskStartScenarioInPlaceHash(ped, GetHashKey('WORLD_HUMAN_BUCKET_POUR_LOW'), -1, true, 0, 0.0, false)
-                            Wait(4000)
-                            ClearPedTasksImmediately(ped)
-                            TriggerServerEvent('devchacha-weed:server:fillBucket')
-                        else
-                            Notify('You need an empty bucket!', 'error')
-                        end
-                    end)
-                    Wait(1000)
-                end
-            end
-        end
-        Wait(sleep)
-    end
-end)
+-- Natural Water Interaction handled in the Proximity thread

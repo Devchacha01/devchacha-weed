@@ -249,10 +249,15 @@ for strainName, strain in pairs(Config.Strains) do
     end)
 end
 
--- Usable water bucket
-exports.vorp_inventory:registerUsableItem(Config.WaterItem, function(data)
-    exports.vorp_inventory:closeInventory(data.source)
-    TriggerClientEvent('devchacha-weed:client:useWaterBucket', data.source)
+-- Usable water bucket (only registered if devchacha-farming is not running to avoid duplicate warnings)
+CreateThread(function()
+    Wait(5000) -- Wait for other resources to load
+    if GetResourceState('devchacha-farming') ~= 'started' and GetResourceState('devchacha-farming') ~= 'starting' then
+        exports.vorp_inventory:registerUsableItem(Config.WaterItem, function(data)
+            exports.vorp_inventory:closeInventory(data.source)
+            TriggerClientEvent('devchacha-weed:client:useWaterBucket', data.source)
+        end)
+    end
 end)
 
 RegisterNetEvent('devchacha-weed:server:removeItem', function(item, count)
@@ -427,25 +432,29 @@ RegisterNetEvent('devchacha-weed:server:alertLaw', function(coords, locationName
     local src = source
     if not Config.PoliceAlerts.enabled then return end
 
-    local users = VORPCore.getUsers()
-    for _, user in pairs(users) do
-        local Character = user.getUsedCharacter
-        if Character then
-            local job = Character.job
-            for _, alertJob in ipairs(Config.PoliceAlerts.jobs) do
-                if job == alertJob then
-                    local title = 'Drug Sale Reported'
-                    local description = 'A suspicious individual was seen selling drugs in ' .. locationName
-                    
-                    if locationName == 'Large Illegal Farm Detected' then
-                        title = 'Illegal Cultivation Reported'
-                        description = 'Reports of a large illegal farm operation in the area!'
-                    end
-                    
-                    TriggerClientEvent('vorp:NotifyLeft', Character.source, title, description, "generic_textures", "tick", 10000, "COLOR_RED")
-                    
-                    if Config.PoliceAlerts.blip.enabled then
-                        TriggerClientEvent('devchacha-weed:client:policeBlip', Character.source, coords)
+    local players = GetPlayers()
+    for _, playerId in ipairs(players) do
+        local sourceId = tonumber(playerId)
+        local User = VORPCore.getUser(sourceId)
+        if User then
+            local Character = User.getUsedCharacter
+            if Character then
+                local job = Character.job
+                for _, alertJob in ipairs(Config.PoliceAlerts.jobs) do
+                    if job == alertJob then
+                        local title = 'Drug Sale Reported'
+                        local description = 'A suspicious individual was seen selling drugs in ' .. locationName
+                        
+                        if locationName == 'Large Illegal Farm Detected' then
+                            title = 'Illegal Cultivation Reported'
+                            description = 'Reports of a large illegal farm operation in the area!'
+                        end
+                        
+                        TriggerClientEvent('vorp:NotifyLeft', sourceId, title, description, "generic_textures", "tick", 10000, "COLOR_RED")
+                        
+                        if Config.PoliceAlerts.blip.enabled then
+                            TriggerClientEvent('devchacha-weed:client:policeBlip', sourceId, coords)
+                        end
                     end
                 end
             end
