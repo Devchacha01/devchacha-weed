@@ -450,7 +450,7 @@ RegisterNetEvent('devchacha-weed:server:alertLaw', function(coords, locationName
                             description = 'Reports of a large illegal farm operation in the area!'
                         end
                         
-                        TriggerClientEvent('vorp:NotifyLeft', sourceId, title, description, "generic_textures", "tick", 10000, "COLOR_RED")
+                        TriggerClientEvent('vorp:NotifyLeft', sourceId, title, description, "generic_textures", "tick", 20000, "COLOR_RED")
                         
                         if Config.PoliceAlerts.blip.enabled then
                             TriggerClientEvent('devchacha-weed:client:policeBlip', sourceId, coords)
